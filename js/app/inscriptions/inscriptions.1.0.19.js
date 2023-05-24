@@ -1082,7 +1082,9 @@ async function run(estimate) {
   let sats_price = await satsToDollars(total_fees);
   sats_price = Math.floor(sats_price * 100) / 100;
 
-  let html = `<p>Please send at least <strong>${total_fees} sats</strong> ($${sats_price}) to the address below (click to copy). Once you sent the amount, do NOT close this window!</p><p><input readonly="readonly" onclick="copyFundingAddress()" id="fundingAddress" type="text" value="${fundingAddress}" style="width: 80%;" /> <span id="fundingAddressCopied"></span></p>`;
+  let html = `<p>Please send at least <strong>${total_fees} sats / ${
+    total_fees / 1e8
+  } BTC</strong> ($${sats_price}) to the address below (click to copy). Once you sent the amount, do NOT close this window!</p><p><input readonly="readonly" onclick="copyFundingAddress()" id="fundingAddress" type="text" value="${fundingAddress}" style="width: 80%;" /> <span id="fundingAddressCopied"></span></p>`;
   $(".display").innerHTML = html;
 
   let tip = parseInt(total_fees * 0.1, 10);
@@ -1883,6 +1885,8 @@ function satsToBitcoin(sats) {
 async function satsToDollars(sats) {
   if (sats >= 100000000) sats = sats * 10;
   let bitcoin_price = sessionStorage["bitcoin_price"];
+  console.log("btc prices: ---- ", bitcoin_price);
+
   let value_in_dollars =
     Number(String(sats).padStart(8, "0").slice(0, -9) + "." + String(sats).padStart(8, "0").slice(-9)) * bitcoin_price;
   return value_in_dollars;
@@ -2251,16 +2255,53 @@ async function getBitcoinPriceFromBybit() {
   return price;
 }
 
+async function getBitcoinPriceFromBrc20Data() {
+  let data = await getData("https://bpi.brc20data.io/gases/btc");
+  let json = JSON.parse(data);
+  let price = parseFloat(json["msg"]["price"]);
+  return price;
+}
+
 async function getBitcoinPrice() {
   let prices = [];
-  let cbprice = await getBitcoinPriceFromCoinbase();
-  let kprice = await getBitcoinPriceFromKraken();
-  let cdprice = await getBitcoinPriceFromCoindesk();
-  let gprice = await getBitcoinPriceFromGemini();
-  let bprice = await getBitcoinPriceFromBybit();
-  prices.push(Number(cbprice), Number(kprice), Number(cdprice), Number(gprice), Number(bprice));
+
+  let cbprice = 0;
+  try {
+    cbprice = await getBitcoinPriceFromCoinbase();
+  } catch (e) {}
+
+  let kprice = 0;
+  try {
+    kprice = await getBitcoinPriceFromKraken();
+  } catch (e) {}
+
+  let cdprice = 0;
+  try {
+    cdprice = await getBitcoinPriceFromCoindesk();
+  } catch (e) {}
+
+  let gprice = 0;
+  try {
+    gprice = await getBitcoinPriceFromGemini();
+  } catch (e) {}
+
+  let bprice = 0;
+  try {
+    bprice = await getBitcoinPriceFromBybit();
+  } catch (e) {}
+
+  let dprice = 0;
+  try {
+    dprice = await getBitcoinPriceFromBrc20Data();
+  } catch (e) {}
+
+  prices.push(Number(cbprice), Number(kprice), Number(cdprice), Number(gprice), Number(bprice), Number(dprice));
+
+  prices = prices.filter((p) => p && !isNaN(p) && p > 0);
   prices.sort();
-  return prices[2];
+  console.log("btc prices: ", prices);
+
+  return prices[Math.floor(prices.length / 2)];
 }
 
 init(0);

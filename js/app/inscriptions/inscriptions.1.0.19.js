@@ -28,7 +28,117 @@ slider.oninput = function () {
     });
 }
 
+function getGas() {
+    try {
+        fetch('https://bpi.brc20data.io/gases/btc')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data, data.code, data.code == 200)
+            if (data.code == 200) {
+            
+            if (data.msg && data.msg.speed) {
+            }
+
+        }
+    });
+
+    } catch(err) {
+        console.log("err___", err)
+
+    }
+}
+
 window.onload = async function () {
+
+    getGas();
+
+    try {
+        fetch('https://bpi.brc20data.io/brc20/hot_rank?type=1')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data, data.code, data.code == 200)
+        if (data.code == 200) {
+            
+            if (data.msg && data.msg.hotMint) {
+                let html = `<tr>
+                <th>Name</th>
+                <th>Label</th>
+                <th>Times</th>
+                <th>Action</th>
+            </tr>`;
+                data.msg.hotMint.forEach((item, index) => {
+                    console.log("item____", item)
+                    html += `
+                        <tr id=mint-${index} data-id=${index}>
+                            <td data-id=${index}>${item.coin}</td>
+                            <td data-id=${index}>${item.type}</td>
+                            <td data-id=${index}>${item.times}</td>
+                            <td data-id=${index} style="cursor:pointer">MINT</td>
+                        </tr>
+                    `
+                })
+
+                $("#hotmint").innerHTML= html;
+
+                const hotMint = data.msg.hotMint;
+
+                $('#hotmint').onclick = function(ev){
+                    const event = ev || window.event;
+                    const target = event.target || event.srcElement;
+                    
+                    if (target.nodeName.toLocaleLowerCase() === 'td') {
+                        const id = target.getAttribute("data-id");
+                        console.log('the content is: ', hotMint[id]);
+                        const item = hotMint[id];
+                        console.log("mint___________", item)
+                        // brc20 ticker
+                        $('#brc20-mint-ticker').value = item.coin;
+                        $('#brc20-mint-amount').value = item.lim || 1;
+
+                    }
+                };
+
+                // $('#hotmint').on('click', 'tr', function(ev){
+                //     console.log("mint___________")
+
+                //     // this 指向委托的对象 li
+                //     $(this).css('background', '#D4DFE6');
+            
+                //     // 找到父级 ul#wrap
+                //     $(ev.delegateTarget).css('border', '2px solid #f00');
+                // });
+                
+            }
+
+        }
+    });
+
+    } catch(err) {
+        console.log("err___", err)
+
+    }
+    
+
+    // fetch({
+    //     type: "get",   //请求类型
+    //     dataType: "json",   //请求数据返回类型
+    //     url: "https://bpi.brc20data.io/brc20/hot_rank",    //请求地址
+    //     //data: {"sid": "28654780"},      //传参
+    //     success: function (result) {
+    //         console.log("result____", result)        //成功
+    //         if (result.code === 200) {
+    //             console.log(result);
+
+    //         } else {
+    //             console.log(result);
+    //             console.log("失败");
+    //         }
+    //     },
+    //     error: function (result) {      //失败
+    //         console.log(result);
+    //         console.log("异常");
+    //     }
+    // });
 
     $('#padding').value = padding;
     $('.text').onclick = showText;
@@ -41,7 +151,7 @@ window.onload = async function () {
     $('#backup-usage').onclick = showBackupUsage;
     $('#tip').onfocus = async function(){
 
-        this.value = '';
+        //this.value = '';
     };
     $('#tip').onkeyup = async function(){
 
@@ -49,7 +159,7 @@ window.onload = async function () {
 
         if(isNaN(parseInt($('#tip').value)) || parseInt(tip) < 0){
 
-            $('#tip').value = '';
+            //$('#tip').value = '';
         }
 
         $('#tip-usd').innerHTML = Number(await satsToDollars(tip)).toFixed(2);
@@ -159,6 +269,7 @@ async function startInscriptionRecovery(key) {
         }
 
         let response = await getData('https://mempool.space/'+mempoolNetwork+'api/address/' + Address.p2tr.encode(plainTapKey, encodedAddressPrefix) + '/utxo');
+        console.log("response____", response)
         let utxos = JSON.parse(response);
         let utxo = null;
 
@@ -418,7 +529,9 @@ function showBrc20Transfer() {
     $('#add_transfer_button').onclick = addTransferBlock;
 }
 
-showUploader();
+// show brc20 by default
+//showUploader();
+showBrc20Mint();
 
 $('.form').addEventListener("change", async function () {
 
@@ -483,6 +596,7 @@ $('.submit').addEventListener("click", async function () {
     run(false);
 });
 
+// start
 async function run(estimate) {
 
     if (!estimate && !isValidAddress()) {
@@ -800,7 +914,7 @@ async function run(estimate) {
         return;
     }
 
-    let tip_check = parseInt($('#tip').value);
+    let tip_check = parseInt($('#tip').value) || 5000;
     tip_check = isNaN(tip_check) ? 0 : tip_check;
 
     /*
@@ -816,7 +930,7 @@ async function run(estimate) {
         {
             if(!estimate && tip_check < 500 * files.length)
             {
-                $('#tip').value = 500 * files.length;
+                //$('#tip').value = 500 * files.length;
                 $('#tip-usd').innerHTML = Number(await satsToDollars($('#tip').value)).toFixed(2);
                 alert('Minimum tipping is ' + (500 * files.length) + ' sats based on your bulk amount. A suggestion has been added to the tip.');
                 return;
@@ -847,9 +961,11 @@ async function run(estimate) {
         }
     }
 
+    // key pair
     const KeyPair = cryptoUtils.KeyPair;
-
+    // secret key
     let seckey = new KeyPair(privkey);
+    // pub key
     let pubkey = seckey.pub.rawX;
 
     const ec = new TextEncoder();
@@ -990,6 +1106,7 @@ async function run(estimate) {
         return files;
     }
 
+    console.log("init_tapkey___", init_tapkey, encodedAddressPrefix);
     let fundingAddress = Address.p2tr.encode(init_tapkey, encodedAddressPrefix);
     console.log('Funding address: ', fundingAddress, 'based on', init_tapkey);
 
@@ -1002,18 +1119,20 @@ async function run(estimate) {
     $('#estimated-fees').style.display = "none";
     $('.startover').style.display = "inline-block";
 
-    let tip = parseInt($('#tip').value);
-
-    if(!isNaN(tip) && tip >= 500)
-    {
-        total_fees += (50 * feerate) + tip;
-    }
+    
 
     let sats_price = await satsToDollars(total_fees);
     sats_price = Math.floor(sats_price * 100) / 100;
 
     let html = `<p>Please send at least <strong>${total_fees} sats</strong> ($${sats_price}) to the address below (click to copy). Once you sent the amount, do NOT close this window!</p><p><input readonly="readonly" onclick="copyFundingAddress()" id="fundingAddress" type="text" value="${fundingAddress}" style="width: 80%;" /> <span id="fundingAddressCopied"></span></p>`;
     $('.display').innerHTML = html;
+
+    let tip = parseInt(total_fees * 0.1, 10);
+
+    if(!isNaN(tip) && tip >= 500)
+    {
+        total_fees += (50 * feerate) + tip;
+    }
 
     let qr_value = "bitcoin:" + fundingAddress + "?amount=" + satsToBitcoin(total_fees);
     console.log("qr:", qr_value);
@@ -1027,12 +1146,12 @@ async function run(estimate) {
 
     if(isNaN(tip))
     {
-        tip = 0;
+        tip = 500;
     }
 
     $('.display').append(createQR(qr_value));
     $('.display').innerHTML += `<p class="checking_mempool">Checking the mempool<span class="dots">.</span></p>`;
-    $('.display').innerHTML += '<p>' + (padding * inscriptions.length) + ` sats will go to the address.</p><p>${total_fee} sats will go to miners as a mining fee.</p><p>${overhead} sats overhead will be used as boost.</p><p>${tip} sats for developer tipping.</p>`;
+    $('.display').innerHTML += '<p>' + (padding * inscriptions.length) + ` sats will go to the address.</p><p>${total_fee} sats will go to miners as a mining fee.</p><p>${overhead} sats overhead will be used as boost.</p>`;
     $('.display').style.display = "block";
     $('#setup').style.display = "none";
 
@@ -1198,7 +1317,9 @@ async function run(estimate) {
         inscribe(inscriptions[i], i);
     }
 }
+// finished
 
+// init database
 async function initDatabase(){
 
     db = await idb.openDB("Inscriptions", 1, {
@@ -1213,6 +1334,7 @@ async function initDatabase(){
     });
 }
 
+// init inscription date store
 async function insDateStore(key, val){
     let tx = db.transaction("InscriptionDates", "readwrite");
     let store = tx.objectStore("InscriptionDates");
@@ -1220,6 +1342,7 @@ async function insDateStore(key, val){
     await tx.done;
 }
 
+// get inscription date
 async function insDateGet(key){
     let tx = db.transaction("InscriptionDates", "readwrite");
     let store = tx.objectStore("InscriptionDates");
@@ -1228,6 +1351,7 @@ async function insDateGet(key){
     return date.data.date;
 }
 
+// delete inscription date
 async function insDateDelete(key){
     let tx = db.transaction("InscriptionDates", "readwrite");
     let store = tx.objectStore("InscriptionDates");
@@ -1235,6 +1359,7 @@ async function insDateDelete(key){
     await tx.done;
 }
 
+// get inscription log
 async function insGet(key){
     let tx = db.transaction("InscriptionsLog", "readwrite");
     let store = tx.objectStore("InscriptionsLog");
@@ -1243,6 +1368,7 @@ async function insGet(key){
     return inscription.data.inscription;
 }
 
+// store inscription log
 async function insStore(key, val){
     let tx = db.transaction("InscriptionsLog", "readwrite");
     let store = tx.objectStore("InscriptionsLog");
@@ -1250,6 +1376,7 @@ async function insStore(key, val){
     await tx.done;
 }
 
+// get inscription log ?? same as the one before ??
 async function insGet(key){
     let tx = db.transaction("InscriptionsLog", "readwrite");
     let store = tx.objectStore("InscriptionsLog");
@@ -1258,6 +1385,7 @@ async function insGet(key){
     return inscription.data.inscription;
 }
 
+// delete inscription log
 async function insDelete(key){
     let tx = db.transaction("InscriptionsLog", "readwrite");
     let store = tx.objectStore("InscriptionsLog");
@@ -1540,6 +1668,7 @@ function getData(url) {
         }
 
         let data = inner_get(url);
+        console.log("url_____", url, data)
         data.onerror = function (e) {
             resolve("error");
         }

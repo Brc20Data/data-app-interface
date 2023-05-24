@@ -1,7 +1,13 @@
 async function loadPlugins()
 {
 
+    // load jq
     await loadScript('js/lib/jquery.3.6.4.js');
+
+    console.log("plugins____", plugins);
+
+    //{name: 'orc20deploy', file: 'orc20deploy.1.0.0.js', instance: orc20deploy}
+    //{name: 'orc20mint', file: 'orc20mint.1.0.0.js', instance: orc20mint}
 
     for(let i = 0; i < plugins.length; i++)
     {
@@ -16,6 +22,7 @@ async function loadPlugins()
 
         jQuery('#'+plugins[i].name+'_nav').on('click', async function()
         {
+            console.log("onClICK________")
             active_plugin = plugins[i];
             files = [];
             jQuery('#padding').val(''+plugins[i].instance.getPadding());

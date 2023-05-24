@@ -14,11 +14,12 @@
     <script src="js/lib/crypto-utils.1.5.11.js"></script>
     <script src="js/lib/bech32.2.0.0.js"></script>
     <script src="js/lib/qrcode.js"></script>
+    <!-- <script src="js/lib/jquery-3.7.0.min.js"></script> -->
 </head>
 <body>
 
 <nav>
-    <ul>
+    <ul style="display: none">
         <li id="logo"><a href="index.html">looks◉rdinal &gt;&gt;</a></li>
         <li class="active">inscribe</li>
         <li>|</li>
@@ -29,20 +30,87 @@
 </nav>
 
 <div class="app-wrapper">
+    <div>
+        <h3>Hot Mint</h3>
+        <table id="customers">
+            <tbody id="hotmint"></tbody>
+            <!-- <tbody>
+                <tr>
+                    <th>Name</th>
+                    <th>Label</th>
+                    <th>Times</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>16.21%</td>
+                    <td>+0.17%</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>12.12%</td>
+                    <td>+2.27%</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>1</td>
+                    <td>11.68%</td>
+                    <td>-4.57%</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>7.60%</td>
+                    <td>+1.99%</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>4.67%</td>
+                    <td>+0.36%</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>6</td>
+                    <td>4.01%</td>
+                    <td>-0.22%</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>7</td>
+                    <td>2.03%</td>
+                    <td>+0.10%</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>8</td>
+                    <td>1.79%</td>
+                    <td>0.07%</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>16</td>
+                    <td>1.64%</td>
+                    <td>+0.66%</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>9</td>
+                    <td>1.54%</td>
+                    <td>+0.15%</td>
+                </tr>
+            </tbody> -->
+        </table>
+    <div>
 
     <h1>Inscribe</h1>
-    <h6 style="margin-top: -15px;">
-        Self-custodial bulk inscriptions. The most powerful and cost-effective way to inscribe Ordinals on Bitcoin.
-        Join
-        our <a href="https://discord.gg/Ur8XGaurSd" target="_blank">Discord</a>. Make sure to <a href="https://medium.com/@rarity.garden/inscriptions-with-looksordinal-cfa2d635f720" target="_blank">read the guide</a>.
-    </h6>
-    <h2 class="safari_warning">This tool may not work in safari browser. If you are using that, consider switching.</h2>
     <div id="setup">
-
         <div class="mb-3">
             <label for="taproot_address">&gt;&gt; Receiving address <span class="type_of_address">(taproot)</span></label>
             <input id="taproot_address" class="address"
-                   placeholder="Enter a taproot address from an ordinals wallet">
+                placeholder="Enter a taproot address from an ordinals wallet">
         </div>
 
         <p>&gt;&gt; Please choose what you want to inscribe:</p>
@@ -51,25 +119,25 @@
             <div>Standard</div>
             <div style="font-size: 14px; color: gray;">Most popular &amp; standard inscriptions</div>
             <ul>
-                <li>
+                <li style="display: none">
                     <a id="upload_file_nav" class="upload_file active" href="javascript:void(0);">files</a>
                 </li>
-                <li>
+                <li style="display: none">
                     <a id="text_nav" class="text" href="javascript:void(0);">text</a>
                 </li>
-                <li>
+                <li style="display: none">
                     <a id="registration_nav" class="registration" href="javascript:void(0);">.sats domains</a>
                 </li>
-                <li>
+                <li style="display: none">
                     <a id="unisat_nav" class="unisat" href="javascript:void(0);">.unisat domains</a>
                 </li>
                 <li>
                     <a id="brc20_mint_nav" class="brc20_mint" href="javascript:void(0);">brc-20 mint</a>
                 </li>
-                <li class="nav-item">
+                <li class="display: none" style="visibility: hidden;">
                     <a id="brc20_deploy_nav" class="brc20_deploy" href="javascript:void(0);">brc-20 deploy</a>
                 </li>
-                <li class="nav-item">
+                <li class="display: none" style="visibility: hidden;">
                     <a id="brc20_transfer_nav" class="brc20_transfer" href="javascript:void(0);">brc-20 transfer</a>
                 </li>
             </ul>
@@ -85,7 +153,7 @@
 
             <div class="file_form option_form">
                 <input
-                        accept=".json,
+                    accept=".json,
                             .pdf,
                             .asc,
                             .yaml,
@@ -119,20 +187,20 @@
                 <div id="form_container">
 
                 <textarea class="text_area" style="width: 100%; height: 75px;"
-                          placeholder="add some text"></textarea>
+                    placeholder="add some text"></textarea>
 
                 </div>
 
                 <label for="text-multirow" style="display:inline-block;margin-top:15px;">Multi row</label>
                 <input onclick="!this.checked?$('#text-addrow').style.display='none':$('#text-addrow').style.display='inline-block'"
-                       id="text-multirow" style="display: inline-block; height: 0.9rem; width:unset" type="checkbox"/>
+                    id="text-multirow" style="display: inline-block; height: 0.9rem; width:unset" type="checkbox"/>
 
                 <button style="display: none" id="text-addrow" onclick="addMoreText(); return false;">Add Row</button>
 
                 <div style="margin-top: 15px">
                     <label for="text-repeat">Repeat</label>
                     <input id="text-repeat" type="text" value="1"
-                           placeholder="e.g. 10 to mint ten times"/>
+                        placeholder="e.g. 10 to mint ten times"/>
                 </div>
 
             </div>
@@ -140,13 +208,13 @@
             <div class="dns_form option_form">
                 <p>tip: use the .sats domain feature in the Special section above to host your content</p>
             <textarea class="dns" style="width: 100%; height: 250px;"
-                      placeholder="One domain per line. Example:&#10;&#10;ordi.sats&#10;btc.sats"></textarea>
+                    placeholder="One domain per line. Example:&#10;&#10;ordi.sats&#10;btc.sats"></textarea>
                 <button class="dns_checker btn btn-outline-primary mt-3 mb-3" type="button">Check availability</button>
             </div>
 
             <div class="unisat_form option_form">
             <textarea class="unisat_text" style="width: 100%; height: 250px;"
-                      placeholder="One domain per line. Example:&#10;&#10;ordi.unisat&#10;btc.unisat"></textarea>
+                    placeholder="One domain per line. Example:&#10;&#10;ordi.unisat&#10;btc.unisat"></textarea>
                 <button class="unisat_checker btn btn-outline-primary mt-3 mb-3" type="button">Check availability</button>
             </div>
 
@@ -155,7 +223,7 @@
                 <div class="mb-3">
                     <label for="brc20-mint-ticker">Ticker</label>
                     <input id="brc20-mint-ticker" type="text" maxlength="4" value=""
-                           placeholder="e.g. ordi"/>
+                        placeholder="e.g. ordi"/>
                 </div>
 
                 <div class="mb-3">
@@ -166,7 +234,7 @@
                 <div class="mb-3">
                     <label for="brc20-mint-repeat">Repeat</label>
                     <input id="brc20-mint-repeat" type="text" value="1"
-                           placeholder="e.g. 10 to mint ten times"/>
+                        placeholder="e.g. 10 to mint ten times"/>
                 </div>
 
             </div>
@@ -176,7 +244,7 @@
                 <div class="mb-3">
                     <label for="brc20-deploy-ticker">Ticker</label>
                     <input id="brc20-deploy-ticker" type="text" maxlength="4" value=""
-                           placeholder="e.g. ordi"/>
+                        placeholder="e.g. ordi"/>
                 </div>
 
                 <div class="mb-3">
@@ -261,15 +329,15 @@
             <div class="feerates">
                 <div class="fee minfee">
                     <div style="color: white;" class="num rounded">...</div>
-                    <div class="name">Min</div>
+                    <div class="name">Slow</div>
                 </div>
                 <div class="fee midfee">
                     <div style="color: white;" class="num rounded">...</div>
-                    <div class="name">Mid</div>
+                    <div class="name">Fast</div>
                 </div>
                 <div class="fee maxfee">
                     <div style="color: white;" class="num rounded">...</div>
-                    <div class="name">Max</div>
+                    <div class="name">Super</div>
                 </div>
             </div>
             <div style="margin-top: 15px;" id="sliderange">
@@ -282,8 +350,8 @@
 
         <div><label><span style="margin-right: 10px;">🔧</span> Options</label></div>
 
-        <div>
-            <label style="display: inline-block" for="padding"><span
+        <div style="display: none">
+            <label style="display: inline-block; display: none" for="padding"><span
                     style="margin-left: 10px; margin-right: 16px;">₿</span>
                 Sats in inscription (padding)</label>
             <input style="width: 20%" id="padding" type="text" value=""/>
@@ -304,7 +372,7 @@
             <div id="backup-list" style="display:none; margin-top: 15px; max-height: 500px; overflow-x: auto"></div>
         </div>
 
-        <div id="tipping" style="display: inline-block;">
+        <div id="tipping" style="display: inline-block; display: none;">
             <label for="tip" style="display: inline-block;margin-bottom: 0"><span style="margin-right: 6px;">💖</span>
                 Developer Tip</label>
             <input id="tip" style="width: 100px; margin-bottom:0;" type="text" value="0"/> sats ($<span
@@ -335,17 +403,8 @@
     </div>
     <hr style="margin-top: 30px;"/>
     <div style="text-align: center;font-size: 14px;">
-        looks◉rdinal is a <a href="https://rarity.garden" style="font-size: 14px;" target="_blank">RarityGarden</a> project.
+        <a href="https://t.me/brc20data">Brc2◉Data</a> is a data collection tool for every big BRC20 moment.
     </div>
-    <div style="text-align: center;font-size: 14px;">
-        The inscription tool is a fork of <a style="font-size: 14px;" href="https://inscribetheplanet.com" target="_blank">Inscribe
-        the planet</a> (<a style="font-size: 14px;" href="https://github.com/BennyTheDev/inscriptions-online"
-                           target="_blank">Github</a>)
-    </div>
-    <div style="text-align: center;font-size: 14px;">
-        Features and experiences between forks might differ.
-    </div>
-
 </div>
 
 <!-- fake adbox to raise warning -->

@@ -85,9 +85,13 @@ window.onload = async function () {
                 console.log("the content is: ", hotMint[id]);
                 const item = hotMint[id];
                 console.log("mint___________", item);
+
                 // brc20 ticker
                 $("#brc20-mint-ticker").value = item.coin;
                 $("#brc20-mint-amount").value = item.lim || 1;
+                $("#brc20-mint-repeat").value = 10;
+
+                $("#inscribe-title").scrollIntoView();
               }
             };
 

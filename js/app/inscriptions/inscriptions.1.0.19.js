@@ -77,6 +77,8 @@ window.onload = async function () {
             const hotMint = data.msg.hotMint;
 
             $("#hotmint").onclick = function (ev) {
+              showBrc20Mint();
+
               const event = ev || window.event;
               const target = event.target || event.srcElement;
 
